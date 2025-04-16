@@ -23,7 +23,8 @@ export class TrainingService {
   media = { type: '', url: '' };
   questions: Question[] = [];
 
-  isLoading = false; // 👈 NEW
+  isLoading = false; 
+  references: string[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -49,7 +50,7 @@ export class TrainingService {
         prompt: chapter.chapterTitle
       })
     );
-    this.setTrainingContent(response.content, response.media, response.questions);
+    this.setTrainingContent(response.content, response.media, response.questions,response.references);
     this.isLoading = false;
   }
 
@@ -64,10 +65,11 @@ export class TrainingService {
     }
   }
 
-  setTrainingContent(content: string, media: any, questions: Question[]) {
+  setTrainingContent(content: string, media: any, questions: Question[], references: string[] = []) {
     this.content = content;
     this.media = media;
     this.media.url = this.media.url.includes('?') ? this.media.url : `${this.media.url}?rel=0`;
     this.questions = questions;
+    this.references = references; // ✅ save references
   }
 }
