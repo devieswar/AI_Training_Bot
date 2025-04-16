@@ -1,0 +1,27 @@
+<div class="flex flex-col h-full">
+    <!-- Message Area -->
+    <div class="flex-1 space-y-2 overflow-y-auto pr-2">
+      <div
+        *ngFor="let msg of messages"
+        class="text-sm p-2 rounded max-w"
+        [ngClass]="{
+          'text-left self-start': msg.sender === 'bot',
+          'bg-blue-100 text-right self-end': msg.sender === 'user'
+        }"
+      >
+        {{ msg.text }}
+      </div>
+    </div>
+  
+    <!-- Input Form -->
+    <form (submit)="sendMessage()" class="mt-4 flex gap-2">
+      <input
+        [(ngModel)]="userMessage"
+        name="chat"
+        placeholder="Ask for training..."
+        class="flex-1 border p-2 rounded"
+      />
+      <button type="submit" class="bg-blue-500 text-white px-4 rounded">Send</button>
+    </form>
+  </div>
+  

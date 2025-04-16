@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.chat-container {
+  @apply flex flex-col gap-2;
+}
+.hint {
+  @apply text-sm text-red-500;
+}
