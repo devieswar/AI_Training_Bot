@@ -1,6 +1,7 @@
 const OpenAI = require('openai');
 const axios = require('axios');
-const {fetchTranscript} = require('youtube-transcript'); // ✅ fix import
+const { YoutubeTranscript } = require('youtube-transcript');
+
 
 require('dotenv').config();
 
@@ -27,7 +28,7 @@ exports.getYouTubeVideoEmbedUrl = async (query) => {
     if (!videoId) return null;
 
     try {
-      const transcript = await fetchTranscript(videoId); 
+      const transcript = await YoutubeTranscript.fetchTranscript(videoId); // ✅ await here
       fullTranscript = transcript.map(t => t.text).join(' ');
     } catch (err) {
       console.info('YouTube transcript fetch error:', err.message);
@@ -85,36 +86,37 @@ Only return valid JSON — no extra text, markdown, or explanations.
 
 exports.generateTrainingContent = async (topic, fullTranscript, videoUrl) => {
   const prompt = `
-You are an expert training content generator. Create structured training content based on the topic: "${topic}".
-Use this YouTube transcription as source:\n"${fullTranscript}"
+You are an expert AI trainer and content generator. Based on the topic: "${topic}", generate high-quality structured training material.
 
-Return strictly valid JSON with this structure:
+Use this YouTube transcription as the primary source:\n"${fullTranscript}"
+
+Return **only valid JSON** with this exact structure:
 
 {
-  "content": "<2-3 short paragraphs summarizing the topic>",
+  "content": "<2–3 beginner-friendly paragraphs summarizing the topic>",
   "media": {
     "type": "video",
     "url": "https://www.youtube.com/embed/PLACEHOLDER"
   },
   "references": [
-    "<official or educational website URLs>"
+    "<REAL official, educational, or well-known URLs only. Do NOT invent links. Scrape from known sources like .edu, .org, wikipedia.org, gov sites, or trusted .com domains such as w3schools, MDN, or official documentation.>"
   ],
   "questions": [
     {
       "type": "mcq",
-      "question": "<Multiple-choice question>",
+      "question": "<Beginner-friendly multiple-choice question>",
       "options": ["A", "B", "C", "D"],
       "correctAnswer": "<correct option>"
     },
     {
       "type": "truefalse",
-      "question": "<True or False question>",
+      "question": "<Beginner-level True or False question>",
       "options": ["True", "False"],
       "correctAnswer": "<correct option>"
     },
     {
       "type": "mcq",
-      "question": "<Another MCQ>",
+      "question": "<Another MCQ for the same content>",
       "options": ["A", "B", "C", "D"],
       "correctAnswer": "<correct option>"
     },
@@ -133,8 +135,13 @@ Return strictly valid JSON with this structure:
   ]
 }
 
-Use content appropriate for beginners. Use double quotes only. DO NOT include markdown or explanation — only return JSON.
+❗Important Guidelines:
+- Use content suitable for beginners or learners with no prior exposure to the topic.
+- The "references" section should include ONLY **factual, verifiable URLs** to official documentation or educational sites.
+- DO NOT make up URLs — choose existing, trusted sources.
+- Format the entire response as **pure JSON** using only double quotes (no markdown, no explanations, no commentary).
 `;
+
 
   const chatCompletion = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',

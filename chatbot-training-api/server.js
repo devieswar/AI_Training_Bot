@@ -21,9 +21,9 @@ app.post('/api/generate-chapters', async (req, res) => {
     const results = [];
 
     for (const chapterTitle of chapters) {
-      const { videoUrl, fullTranscript } = await getYouTubeVideoEmbedUrl(chapterTitle);
-      const data = await generateTrainingContent(chapterTitle, fullTranscript, videoUrl);
-      results.push({ chapterTitle, ...data });
+      //const { videoUrl, fullTranscript } = await getYouTubeVideoEmbedUrl(chapterTitle);
+      //const data = await generateTrainingContent(chapterTitle, fullTranscript, videoUrl);
+      results.push({ chapterTitle});
     }
 
     res.json({ topic, chapters: results });
